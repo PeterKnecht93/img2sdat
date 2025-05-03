@@ -9,7 +9,7 @@
 import os, tempfile
 import common, blockimgdiff, images, sparse_img
 
-def main(INPUT_IMAGE, OUTDIR='.', VERSION=4):
+def main(INPUT_IMAGE, OUTDIR='.'):
     __version__ = '2.0'
 
     print('img2sdat binary - version: %s\n' % __version__)
@@ -17,7 +17,7 @@ def main(INPUT_IMAGE, OUTDIR='.', VERSION=4):
     if not os.path.isdir(OUTDIR):
         os.makedirs(OUTDIR)
 
-    OUTDIR = OUTDIR + '/'+ os.path.splitext(os.path.basename(INPUT_IMAGE))[0]
+    OUTDIR = OUTDIR + '/' + os.path.splitext(os.path.basename(INPUT_IMAGE))[0]
 
     common.OPTIONS.cache_size = 4 * 4096
 
@@ -28,7 +28,7 @@ def main(INPUT_IMAGE, OUTDIR='.', VERSION=4):
         image = images.FileImage(INPUT_IMAGE)
 
     # Generate output files
-    b = blockimgdiff.BlockImageDiff(image, None, VERSION)
+    b = blockimgdiff.BlockImageDiff(image, version=4)
     b.Compute(OUTDIR)
 
     print('Done! Output directory: %s' % os.path.dirname(OUTDIR))
@@ -48,7 +48,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Visit xda thread for more information.')
     parser.add_argument('image', help='input partition image')
     parser.add_argument('-o', '--outdir', help='output directory (current directory by default)')
-    parser.add_argument('-v', '--version', help='transfer list version number, will be asked by default - more info on xda thread)')
 
     args = parser.parse_args()
 
@@ -59,9 +58,4 @@ if __name__ == '__main__':
     else:
         OUTDIR = '.'
 
-    if args.version:
-        VERSION = int(args.version)
-    else:
-        VERSION = 4
-
-    main(INPUT_IMAGE, OUTDIR, VERSION)
+    main(INPUT_IMAGE, OUTDIR)

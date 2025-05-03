@@ -6,16 +6,15 @@ This binary requires Python 3 or newer installed on your system.
 
 ## Usage
 ```
-img2sdat.py <partition_img> [-o outdir] [-v version]
+img2sdat.py <partition_img> [-o outdir]
 ```
 - `<partition_img>` = input partition image
 - `[-o outdir]` = output directory (current directory by default)
-- `[-v version]` = transfer list version number (3 - 6.0, 4 - 7.0, more info on xda thread)
 
 ## Example
 This is a simple example on a Linux system:
 ```
-~$ ./img2sdat.py system.img -o tmp -v 4
+~$ ./img2sdat.py system.img -o tmp
 ```
 It will create `system.new.dat`, `system.patch.dat` and `system.transfer.list` in the `tmp` directory.
 
