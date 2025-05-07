@@ -28,7 +28,7 @@ def main(INPUT_IMAGE, OUTDIR, CACHE_SIZE, BLOCK_MAP_FILE):
         image = images.FileImage(INPUT_IMAGE)
 
     # Generate output files
-    b = blockimgdiff.BlockImageDiff(image, version=4)
+    b = blockimgdiff.BlockImageDiff(image, version=4, disable_imgdiff=True)
     b.Compute(OUTDIR)
 
     print('Done! Output directory: %s' % os.path.dirname(OUTDIR))
