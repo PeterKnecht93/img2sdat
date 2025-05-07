@@ -9,7 +9,7 @@
 import os, tempfile
 import common, blockimgdiff, images, sparse_img
 
-def main(INPUT_IMAGE, OUTDIR='.'):
+def main(INPUT_IMAGE, OUTDIR, CACHE_SIZE):
     __version__ = '2.0'
 
     print('img2sdat binary - version: %s\n' % __version__)
@@ -19,7 +19,7 @@ def main(INPUT_IMAGE, OUTDIR='.'):
 
     OUTDIR = OUTDIR + '/' + os.path.splitext(os.path.basename(INPUT_IMAGE))[0]
 
-    common.OPTIONS.cache_size = 4 * 4096
+    common.OPTIONS.cache_size = CACHE_SIZE
 
     # Get image
     if IsSparseImage(INPUT_IMAGE):
@@ -47,6 +47,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Visit xda thread for more information.')
     parser.add_argument('image', help='input partition image')
+    parser.add_argument('-c', '--cache-size', help='cache partition size')
     parser.add_argument('-o', '--outdir', help='output directory (current directory by default)')
 
     args = parser.parse_args()
@@ -58,4 +59,9 @@ if __name__ == '__main__':
     else:
         OUTDIR = '.'
 
-    main(INPUT_IMAGE, OUTDIR)
+    if args.cache_size:
+        CACHE_SIZE = int(args.cache_size)
+    else:
+        CACHE_SIZE = 4 * 4096
+
+    main(INPUT_IMAGE, OUTDIR, CACHE_SIZE)
