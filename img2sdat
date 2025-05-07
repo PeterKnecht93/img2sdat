@@ -6,10 +6,10 @@
 #          DATE: 2018-05-25 12:19:12 CEST
 #====================================================
 
-import os, tempfile
+import os
 import common, blockimgdiff, images, sparse_img
 
-def main(INPUT_IMAGE, OUTDIR, CACHE_SIZE):
+def main(INPUT_IMAGE, OUTDIR, CACHE_SIZE, BLOCK_MAP_FILE):
     __version__ = '2.0'
 
     print('img2sdat binary - version: %s\n' % __version__)
@@ -23,7 +23,7 @@ def main(INPUT_IMAGE, OUTDIR, CACHE_SIZE):
 
     # Get image
     if IsSparseImage(INPUT_IMAGE):
-        image = sparse_img.SparseImage(INPUT_IMAGE, tempfile.mkstemp()[1], '0')
+        image = sparse_img.SparseImage(INPUT_IMAGE, BLOCK_MAP_FILE, clobbered_blocks='0')
     else:
         image = images.FileImage(INPUT_IMAGE)
 
@@ -47,6 +47,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Visit xda thread for more information.')
     parser.add_argument('image', help='input partition image')
+    parser.add_argument('-B', '--block-list-file', help='block map file')
     parser.add_argument('-c', '--cache-size', help='cache partition size')
     parser.add_argument('-o', '--outdir', help='output directory (current directory by default)')
 
@@ -64,4 +65,6 @@ if __name__ == '__main__':
     else:
         CACHE_SIZE = 4 * 4096
 
-    main(INPUT_IMAGE, OUTDIR, CACHE_SIZE)
+    BLOCK_MAP_FILE = args.block_list_file
+
+    main(INPUT_IMAGE, OUTDIR, CACHE_SIZE, BLOCK_MAP_FILE)

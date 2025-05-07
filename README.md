@@ -9,6 +9,7 @@ This binary requires Python 3 or newer installed on your system.
 img2sdat.py <partition_img> [-o outdir]
 ```
 - `<partition_img>` = input partition image
+- `[-B map_file]` = block map file
 - `[-c size]` = cache partition size
 - `[-o outdir]` = output directory (current directory by default)
 
