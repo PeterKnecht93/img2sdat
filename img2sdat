@@ -22,7 +22,7 @@ def main(INPUT_IMAGE, OUTDIR, CACHE_SIZE, BLOCK_MAP_FILE):
     common.OPTIONS.cache_size = CACHE_SIZE
 
     # Get image
-    if IsSparseImage(INPUT_IMAGE):
+    if common.IsSparseImage(INPUT_IMAGE):
         image = sparse_img.SparseImage(INPUT_IMAGE, BLOCK_MAP_FILE, clobbered_blocks='0')
     else:
         image = images.FileImage(INPUT_IMAGE)
@@ -33,14 +33,6 @@ def main(INPUT_IMAGE, OUTDIR, CACHE_SIZE, BLOCK_MAP_FILE):
 
     print('Done! Output directory: %s' % os.path.dirname(OUTDIR))
     return
-
-def IsSparseImage(INPUT_IMAGE):
-    if not os.path.exists(INPUT_IMAGE):
-        return False
-    with open(INPUT_IMAGE, 'rb') as fp:
-        # Magic for android sparse image format
-        # https://source.android.com/devices/bootloader/images
-        return fp.read(4) == b'\x3A\xFF\x26\xED'
 
 if __name__ == '__main__':
     import argparse
