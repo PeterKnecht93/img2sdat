@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import os
+import brotli, os
 import common, blockimgdiff, images, sparse_img
 
-def main(TARGET_IMAGE, SOURCE_IMAGE, CACHE_SIZE, OUT_DIR):
+def main(TARGET_IMAGE, SOURCE_IMAGE, compress, CACHE_SIZE, OUT_DIR):
     __version__ = '2.0'
     print('img2sdat binary - version: %s' % __version__)
 
@@ -32,6 +32,20 @@ def main(TARGET_IMAGE, SOURCE_IMAGE, CACHE_SIZE, OUT_DIR):
     b = blockimgdiff.BlockImageDiff(TARGET_IMAGE, SOURCE_IMAGE, disable_imgdiff=True)
     b.Compute(OUT_FILE)
 
+    # Compress image with Brotli if specified
+    if compress:
+        CHUNK_SIZE = 16777216
+        OUT_FILE = f'{OUT_FILE}.new.dat'
+        OUT_FILE_BR = f'{OUT_FILE}.br'
+
+        print('- Compressing image with Brotli...')
+        with open(OUT_FILE, 'rb') as dat_in, open(OUT_FILE_BR, 'wb') as dat_out:
+            compressor = brotli.Compressor(quality=6)
+            while chunk := dat_in.read(CHUNK_SIZE):
+                dat_out.write(compressor.process(chunk))
+            dat_out.write(compressor.finish())
+        os.remove(OUT_FILE)
+
     print(f'\nDone! Output directory: {OUT_DIR}')
     return
 
@@ -42,9 +56,10 @@ if __name__ == '__main__':
 
     parser.add_argument('input_image', help='input partition image')
     parser.add_argument('original_image', nargs='?', help='original partition image')
+    parser.add_argument('-b', '--brotli', action='store_true', help='compress data image with Brotli')
     parser.add_argument('-c', '--cache-size', default=4 * 4096, type=int, help='cache partition size')
     parser.add_argument('-o', '--outdir', default='./', help='output directory (current directory by default)')
 
     args = parser.parse_args()
 
-    main(args.input_image, args.original_image, args.cache_size, args.outdir)
+    main(args.input_image, args.original_image, args.brotli, args.cache_size, args.outdir)
