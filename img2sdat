@@ -4,7 +4,7 @@ import brotli, os
 import common, blockimgdiff, images, sparse_img
 
 def main(TARGET_IMAGE, SOURCE_IMAGE, compress, CACHE_SIZE, OUT_DIR):
-    __version__ = '2.0'
+    __version__ = '3.0'
     print('img2sdat binary - version: %s' % __version__)
 
     if not os.path.isdir(OUT_DIR):
