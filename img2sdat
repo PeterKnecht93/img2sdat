@@ -1,59 +1,42 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-#====================================================
-#          FILE: img2sdat.py
-#       AUTHORS: xpirt - luxi78 - howellzhu
-#          DATE: 2018-05-25 12:19:12 CEST
-#====================================================
 
 import os
 import common, blockimgdiff, images, sparse_img
 
-def main(INPUT_IMAGE, OUTDIR, CACHE_SIZE):
+def main(INPUT_IMAGE, CACHE_SIZE, OUT_DIR):
     __version__ = '2.0'
+    print('img2sdat binary - version: %s' % __version__)
 
-    print('img2sdat binary - version: %s\n' % __version__)
-        
-    if not os.path.isdir(OUTDIR):
-        os.makedirs(OUTDIR)
+    if not os.path.isdir(OUT_DIR):
+        os.makedirs(OUT_DIR)
 
-    OUTDIR = OUTDIR + '/' + os.path.splitext(os.path.basename(INPUT_IMAGE))[0]
+    OUT_FILE = os.path.join(OUT_DIR, os.path.splitext(os.path.basename(INPUT_IMAGE))[0])
 
     common.OPTIONS.cache_size = CACHE_SIZE
 
-    # Get image
+    # Construct image
     if common.IsSparseImage(INPUT_IMAGE):
         image = sparse_img.SparseImage(INPUT_IMAGE, clobbered_blocks='0')
     else:
         image = images.FileImage(INPUT_IMAGE)
 
-    # Generate output files
-    b = blockimgdiff.BlockImageDiff(image, version=4, disable_imgdiff=True)
-    b.Compute(OUTDIR)
+    # Generate Android data image
+    print('- Generating Android data image...')
+    b = blockimgdiff.BlockImageDiff(image, disable_imgdiff=True)
+    b.Compute(OUT_FILE)
 
-    print('Done! Output directory: %s' % os.path.dirname(OUTDIR))
+    print(f'\nDone! Output directory: {OUT_DIR}')
     return
 
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser(description='Visit xda thread for more information.')
+    parser = argparse.ArgumentParser(description='A tool to convert filesystem images into sparse Android data images.')
+
     parser.add_argument('image', help='input partition image')
-    parser.add_argument('-c', '--cache-size', help='cache partition size')
-    parser.add_argument('-o', '--outdir', help='output directory (current directory by default)')
+    parser.add_argument('-c', '--cache-size', default=4 * 4096, type=int, help='cache partition size')
+    parser.add_argument('-o', '--outdir', default='./', help='output directory (current directory by default)')
 
     args = parser.parse_args()
 
-    INPUT_IMAGE = args.image
-
-    if args.outdir:
-        OUTDIR = args.outdir
-    else:
-        OUTDIR = '.'
-
-    if args.cache_size:
-        CACHE_SIZE = int(args.cache_size)
-    else:
-        CACHE_SIZE = 4 * 4096
-
-    main(INPUT_IMAGE, OUTDIR, CACHE_SIZE)
+    main(args.image, args.cache_size, args.outdir)
